@@ -148,28 +148,80 @@ document.getElementById("modal").style.display="flex";
 function closeModal(){
 document.getElementById("modal").style.display="none";
 }
-
 /* MINES */
+let minesScore = 0;
+let minesOpened = 0;
+let minesOver = false;
+let minesMap = [];
+
 function mines(){
-let mine=Math.floor(Math.random()*25);
-let html='<div class="score">💣 Find a safe tile</div><div class="grid">';
-for(let i=0;i<25;i++){
-html+=`<button class="tile" onclick="mineClick(${i},${mine},this)">?</button>`;
-}
-html+='</div>';
-show("💣 Mines",html);
+    minesScore = 0;
+    minesOpened = 0;
+    minesOver = false;
+    minesMap = [];
+
+    let mineCount = 5;
+
+    while(minesMap.length < mineCount){
+        let n = Math.floor(Math.random()*25);
+        if(!minesMap.includes(n)){
+            minesMap.push(n);
+        }
+    }
+
+    let html =
+        '<div class="score">💣 Safe Tiles: <span id="safeScore">0</span></div>' +
+        '<div class="grid">';
+
+    for(let i=0;i<25;i++){
+        html += '<button class="tile" onclick="mineClick('+i+',this)">?</button>';
+    }
+
+    html += '</div>';
+    html += '<button class="btn" onclick="mines()">🔄 New Game</button>';
+
+    show("💣 Mines",html);
 }
 
-function mineClick(i,mine,el){
-if(i===mine){
-el.innerText="💣";
-el.style.background="#d33";
-show("💥 Mine!","You hit the mine. Try again!");
-}else{
-el.innerText="💎";
-el.style.background="#176b55";
-el.disabled=true;
-}
+function mineClick(i,el){
+
+    if(minesOver || el.disabled) return;
+
+    if(minesMap.includes(i)){
+
+        el.innerText="💣";
+        el.style.background="#d33";
+        minesOver=true;
+
+        show(
+            "💥 Game Over",
+            "आप Mine पर पहुँच गए!<br><br>🏆 Score: "+minesScore+
+            "<br><br><button class='btn' onclick='mines()'>🔄 New Game</button>"
+        );
+
+    }else{
+
+        el.innerText="💎";
+        el.style.background="#176b55";
+        el.disabled=true;
+
+        minesScore += 10;
+        minesOpened++;
+
+        document.getElementById("safeScore").innerText=minesScore;
+
+        if(minesOpened === 20){
+
+            minesOver=true;
+
+            show(
+                "🏆 You Win!",
+                "बहुत बढ़िया! आपने सभी safe tiles खोल दिए।<br><br>🏆 Score: "+
+                minesScore+
+                "<br><br><button class='btn' onclick='mines()'>🔄 New Game</button>"
+            );
+        }
+    }
 }
 
 /* COIN */
