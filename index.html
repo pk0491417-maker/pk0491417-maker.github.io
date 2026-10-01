@@ -2,42 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Nexora Play</title>
-<meta name="description" content="Nexora Play - Free Online Games">
+<meta name="description" content="Nexora Play - Free Games">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 body{background:#070914;color:#fff}
-header{background:#11152a;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid #292f4b}
-.logo{font-size:25px;font-weight:bold}
-.logo span{color:#6c63ff}
-.install{background:#6c63ff;color:#fff;border:0;padding:10px 15px;border-radius:10px;font-weight:bold}
-.hero{text-align:center;padding:55px 20px;background:linear-gradient(135deg,#11152a,#090b18)}
-.hero h1{font-size:40px;margin-bottom:12px}
-.hero h1 span{color:#6c63ff}
+header{background:#11152a;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid #292f4b}
+.logo{font-size:25px;font-weight:bold}.logo span{color:#6c63ff}
+.install,.btn,.play{background:#6c63ff;color:white;border:0;padding:11px 17px;border-radius:10px;font-weight:bold;cursor:pointer}
+.hero{text-align:center;padding:55px 18px;background:linear-gradient(135deg,#11152a,#090b18)}
+.hero h1{font-size:38px;margin-bottom:12px}.hero h1 span{color:#6c63ff}
 .hero p{color:#b9bfd5;line-height:1.6;margin-bottom:22px}
-.btn{background:#6c63ff;color:white;border:0;padding:12px 22px;border-radius:10px;font-weight:bold}
-.games{max-width:1000px;margin:auto;padding:35px 18px}
+.games{max-width:1050px;margin:auto;padding:35px 18px}
 .games h2{text-align:center;font-size:29px;margin-bottom:25px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
 .card{background:#11152a;border:1px solid #292f4b;border-radius:18px;padding:22px;text-align:center}
-.icon{font-size:45px;margin-bottom:12px}
-.card h3{margin-bottom:8px}
-.card p{font-size:14px;color:#aeb5ca;min-height:38px;margin-bottom:15px}
-.play{background:#252b45;color:white;border:0;padding:10px 18px;border-radius:9px}
+.icon{font-size:45px;margin-bottom:10px}
+.card h3{margin-bottom:8px}.card p{font-size:14px;color:#aeb5ca;min-height:38px;margin-bottom:15px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:18px;z-index:20}
+.box{background:#11152a;border:1px solid #353c5d;border-radius:18px;padding:25px;width:100%;max-width:430px;text-align:center}
+.box h2{margin-bottom:15px}.box p{color:#c0c5d8;margin-bottom:18px;line-height:1.6}
+.close{background:#292f4b;color:white;border:0;padding:10px 20px;border-radius:9px;cursor:pointer}
+.gamearea{margin:15px 0}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:300px;margin:15px auto}
+.tile{aspect-ratio:1;background:#252b45;border:0;border-radius:8px;color:#fff;font-size:20px;cursor:pointer}
+.score{font-size:18px;margin:10px}.big{font-size:40px;margin:15px}
+.choice{margin:5px;padding:12px 18px;border:0;border-radius:9px;background:#252b45;color:#fff;cursor:pointer}
+input{padding:11px;border-radius:8px;border:1px solid #444;background:#080b18;color:#fff;width:100%;margin:8px 0}
 footer{text-align:center;padding:25px;color:#858ca5;border-top:1px solid #292f4b}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:20px;z-index:20}
-.box{background:#11152a;border:1px solid #353c5d;border-radius:18px;padding:25px;width:100%;max-width:400px;text-align:center}
-.box h2{margin-bottom:15px}
-.box p{color:#c0c5d8;margin-bottom:20px;line-height:1.5}
-.close{background:#292f4b;color:white;border:0;padding:10px 20px;border-radius:9px}
-
-@media(max-width:500px){
-.hero h1{font-size:31px}
-.logo{font-size:21px}
-.install{padding:8px 11px}
-}
+@media(max-width:500px){.hero h1{font-size:30px}.logo{font-size:21px}.install{padding:8px 10px}}
 </style>
 </head>
 
@@ -45,12 +39,12 @@ footer{text-align:center;padding:25px;color:#858ca5;border-top:1px solid #292f4b
 
 <header>
 <div class="logo">Nexora <span>Play</span></div>
-<button class="install" onclick="installApp()">📱 Install App</button>
+<button class="install" onclick="installApp()">📱 Install</button>
 </header>
 
 <section class="hero">
 <h1>Welcome to <span>Nexora Play</span></h1>
-<p>🎮 Play • Explore • Enjoy<br>Free gaming demos in one place.</p>
+<p>🎮 Play • Explore • Enjoy<br>Free games in one place.</p>
 <button class="btn" onclick="document.getElementById('games').scrollIntoView()">Explore Games</button>
 </section>
 
@@ -60,71 +54,61 @@ footer{text-align:center;padding:25px;color:#858ca5;border-top:1px solid #292f4b
 <div class="cards">
 
 <div class="card">
-<div class="icon">💣</div>
-<h3>Mines</h3>
-<p>Choose a safe tile and test your luck.</p>
-<button class="play" onclick="playGame('Mines')">Play Now</button>
+<div class="icon">💣</div><h3>Mines</h3>
+<p>Find safe tiles and avoid mines.</p>
+<button class="play" onclick="mines()">Play Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🪙</div>
-<h3>Coin Flip</h3>
-<p>Heads or tails? Make your choice.</p>
-<button class="play" onclick="coinFlip()">Play Now</button>
+<div class="icon">🪙</div><h3>Coin Flip</h3>
+<p>Choose heads or tails.</p>
+<button class="play" onclick="coin()">Play Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🎯</div>
-<h3>Lucky Target</h3>
-<p>Try to hit the lucky target.</p>
-<button class="play" onclick="targetGame()">Play Now</button>
+<div class="icon">🎯</div><h3>Lucky Target</h3>
+<p>Try to hit the target.</p>
+<button class="play" onclick="target()">Play Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🎡</div>
-<h3>Spin Wheel</h3>
-<p>Spin the wheel and see your result.</p>
-<button class="play" onclick="spinWheel()">Spin Now</button>
+<div class="icon">🎡</div><h3>Spin Wheel</h3>
+<p>Spin and get a random result.</p>
+<button class="play" onclick="wheel()">Spin Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🃏</div>
-<h3>Card Match</h3>
-<p>Pick a card and reveal the result.</p>
-<button class="play" onclick="cardMatch()">Play Now</button>
+<div class="icon">🃏</div><h3>Card Match</h3>
+<p>Find the matching card.</p>
+<button class="play" onclick="cards()">Play Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🧩</div>
-<h3>Number Puzzle</h3>
+<div class="icon">🧩</div><h3>Number Puzzle</h3>
 <p>Guess the hidden number.</p>
-<button class="play" onclick="numberPuzzle()">Play Now</button>
+<button class="play" onclick="numberGame()">Play Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🧠</div>
-<h3>GK Quiz</h3>
+<div class="icon">🧠</div><h3>GK Quiz</h3>
 <p>Test your general knowledge.</p>
 <button class="play" onclick="quiz()">Start Quiz</button>
 </div>
 
 <div class="card">
-<div class="icon">🐦</div>
-<h3>Flappy Demo</h3>
-<p>Tap to start the flying game demo.</p>
-<button class="play" onclick="playGame('Flappy Demo')">Play Now</button>
+<div class="icon">🐦</div><h3>Flappy Demo</h3>
+<p>Try to beat your score.</p>
+<button class="play" onclick="flappy()">Play Now</button>
 </div>
 
 <div class="card">
-<div class="icon">🚗</div>
-<h3>Car Racing</h3>
-<p>Ready for a quick racing challenge?</p>
-<button class="play" onclick="playGame('Car Racing')">Race Now</button>
+<div class="icon">🚗</div><h3>Car Racing</h3>
+<p>A quick racing challenge.</p>
+<button class="play" onclick="racing()">Race Now</button>
 </div>
 
 <div class="card">
-<div class="icon">⚽</div>
-<h3>Penalty Kick</h3>
+<div class="icon">⚽</div><h3>Penalty Kick</h3>
 <p>Take your penalty shot.</p>
 <button class="play" onclick="penalty()">Kick Now</button>
 </div>
@@ -132,39 +116,32 @@ footer{text-align:center;padding:25px;color:#858ca5;border-top:1px solid #292f4b
 </div>
 </section>
 
-<footer>
-© 2026 Nexora Play • Free Gaming Platform
-</footer>
+<footer>© 2026 Nexora Play • Free Gaming Platform</footer>
 
 <div class="modal" id="modal">
 <div class="box">
-<h2 id="modalTitle">Nexora Play</h2>
-<p id="modalText">Game result</p>
+<h2 id="title">Nexora Play</h2>
+<div id="content"></div>
 <button class="close" onclick="closeModal()">Close</button>
 </div>
 </div>
 
 <script>
 
-let deferredPrompt;
+let promptEvent;
 
-window.addEventListener("beforeinstallprompt",function(e){
-e.preventDefault();
-deferredPrompt=e;
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();promptEvent=e;
 });
 
-async function installApp(){
-if(deferredPrompt){
-deferredPrompt.prompt();
-deferredPrompt=null;
-}else{
-show("Install App","Chrome ke menu me 'Add to Home screen' ya 'Install app' option check karein.");
-}
+function installApp(){
+if(promptEvent){promptEvent.prompt();promptEvent=null}
+else show("Install App","Chrome menu खोलकर 'Add to Home screen' या 'Install app' चुनें।");
 }
 
-function show(title,text){
-document.getElementById("modalTitle").innerText=title;
-document.getElementById("modalText").innerText=text;
+function show(t,c){
+document.getElementById("title").innerText=t;
+document.getElementById("content").innerHTML=c;
 document.getElementById("modal").style.display="flex";
 }
 
@@ -172,55 +149,122 @@ function closeModal(){
 document.getElementById("modal").style.display="none";
 }
 
-function playGame(name){
-show(name,"🎮 "+name+" ka demo game jaldi aur features ke saath update hoga!");
+/* MINES */
+function mines(){
+let mine=Math.floor(Math.random()*25);
+let html='<div class="score">💣 Find a safe tile</div><div class="grid">';
+for(let i=0;i<25;i++){
+html+=`<button class="tile" onclick="mineClick(${i},${mine},this)">?</button>`;
+}
+html+='</div>';
+show("💣 Mines",html);
 }
 
-function coinFlip(){
-let result=Math.random()<0.5?"🪙 HEADS":"🪙 TAILS";
-show("Coin Flip",result);
-}
-
-function targetGame(){
-let score=Math.floor(Math.random()*101);
-show("Lucky Target","🎯 Aapka target score: "+score);
-}
-
-function spinWheel(){
-let prizes=["⭐ Star","🎁 Gift","🏆 Trophy","🎮 Game","💎 Diamond"];
-let result=prizes[Math.floor(Math.random()*prizes.length)];
-show("Spin Wheel","🎡 Result: "+result);
-}
-
-function cardMatch(){
-let cards=["🃏 Lucky Card","⭐ Star Card","🏆 Trophy Card","💎 Diamond Card"];
-let result=cards[Math.floor(Math.random()*cards.length)];
-show("Card Match","Aapne choose kiya: "+result);
-}
-
-function numberPuzzle(){
-let number=Math.floor(Math.random()*10)+1;
-let guess=prompt("1 se 10 ke beech number guess karo:");
-if(guess==number){
-show("Number Puzzle","🎉 Correct! Number "+number+" tha.");
+function mineClick(i,mine,el){
+if(i===mine){
+el.innerText="💣";
+el.style.background="#d33";
+show("💥 Mine!","You hit the mine. Try again!");
 }else{
-show("Number Puzzle","😄 Number "+number+" tha. Dobara try karo!");
+el.innerText="💎";
+el.style.background="#176b55";
+el.disabled=true;
 }
 }
 
+/* COIN */
+function coin(){
+show("🪙 Coin Flip",
+'<div class="big">🪙</div><button class="choice" onclick="flipResult()">Flip Coin</button>');
+}
+function flipResult(){
+let r=Math.random()<.5?"HEADS 🪙":"TAILS 🪙";
+show("🪙 Result",'<div class="big">'+r+'</div>');
+}
+
+/* TARGET */
+function target(){
+show("🎯 Lucky Target",
+'<div class="big">🎯</div><button class="choice" onclick="targetResult()">Shoot!</button>');
+}
+function targetResult(){
+let s=Math.floor(Math.random()*101);
+show("🎯 Score","Your target score: <b>"+s+"</b>");
+}
+
+/* WHEEL */
+function wheel(){
+let a=["⭐ Star","🎁 Gift","🏆 Trophy","💎 Diamond","🔥 Fire"];
+let r=a[Math.floor(Math.random()*a.length)];
+show("🎡 Spin Wheel",'<div class="big">🎡</div><p>Result: <b>'+r+'</b></p>');
+}
+
+/* CARDS */
+function cards(){
+let a=["⭐","💎","🏆","🍀"];
+let win=a[Math.floor(Math.random()*a.length)];
+show("🃏 Card Match",
+'<p>Choose a card:</p>'+
+a.map(x=>`<button class="choice" onclick="cardResult('${x}','${win}')">${x}</button>`).join(""));
+}
+function cardResult(x,w){
+show("🃏 Result",x===w?"🎉 Match!":"Try again! Correct card was "+w);
+}
+
+/* NUMBER */
+function numberGame(){
+let n=Math.floor(Math.random()*10)+1;
+show("🧩 Number Puzzle",
+'<p>Guess a number from 1 to 10</p>'+
+'<input id="guess" type="number" min="1" max="10" placeholder="Enter number">'+
+'<button class="btn" onclick="checkNumber('+n+')">Check</button>');
+}
+function checkNumber(n){
+let g=document.getElementById("guess").value;
+show("🧩 Result",Number(g)===n?"🎉 Correct!":"❌ Wrong. Number was "+n);
+}
+
+/* QUIZ */
 function quiz(){
-let answer=prompt("भारत की राजधानी क्या है?\nA) Mumbai\nB) Delhi\nC) Kolkata");
-if(answer && answer.toLowerCase().includes("b")){
-show("GK Quiz","🎉 Correct Answer!");
-}else{
-show("GK Quiz","Correct answer: Delhi 🇮🇳");
+show("🧠 GK Quiz",
+'<p>भारत की राजधानी क्या है?</p>'+
+'<button class="choice" onclick="quizResult(false)">Mumbai</button>'+
+'<button class="choice" onclick="quizResult(true)">Delhi</button>'+
+'<button class="choice" onclick="quizResult(false)">Kolkata</button>');
 }
+function quizResult(ok){
+show("🧠 GK Quiz",ok?"🎉 Correct Answer!":"❌ Wrong Answer");
 }
 
+/* FLAPPY DEMO */
+function flappy(){
+let score=0;
+show("🐦 Flappy Demo",
+'<div class="big">🐦</div><p id="fscore">Score: 0</p>'+
+'<button class="btn" onclick="flap()">TAP / FLY</button>');
+window.flapScore=0;
+}
+function flap(){
+window.flapScore++;
+let s=window.flapScore;
+document.getElementById("fscore").innerText="Score: "+s;
+if(s>=10)show("🐦 Flappy Demo","🏆 Great! Score: "+s);
+}
+
+/* RACING */
+function racing(){
+let score=Math.floor(Math.random()*100)+1;
+show("🚗 Car Racing",
+'<div class="big">🚗</div><p>Race completed!</p><p>🏁 Score: <b>'+score+'</b></p>');
+}
+
+/* PENALTY */
 function penalty(){
-let results=["⚽ GOAL! 🎉","🧤 Saved!","⚽ GOAL! 🔥"];
-let result=results[Math.floor(Math.random()*results.length)];
-show("Penalty Kick",result);
+let a=["⚽ GOAL! 🎉","🧤 SAVED!","⚽ GOAL! 🔥","❌ MISSED!"];
+let r=a[Math.floor(Math.random()*a.length)];
+show("⚽ Penalty Kick",
+'<div class="big">⚽</div><p>'+r+'</p>'+
+'<button class="btn" onclick="penalty()">Kick Again</button>');
 }
 
 </script>
