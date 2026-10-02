@@ -224,14 +224,81 @@ function mineClick(i,el){
     }
 }
 
-/* COIN */
-function coin(){
-show("🪙 Coin Flip",
-'<div class="big">🪙</div><button class="choice" onclick="flipResult()">Flip Coin</button>');
+/* COIN FLIP + SOUND */
+
+let coinSoundCtx;
+
+function coinSound(type){
+    if(!coinSoundCtx){
+        coinSoundCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = coinSoundCtx.createOscillator();
+    let gain = coinSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(coinSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "flip" ? 700 :
+        type === "win" ? 1000 : 300;
+
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.12,coinSoundCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        coinSoundCtx.currentTime + 0.25
+    );
+
+    osc.start();
+    osc.stop(coinSoundCtx.currentTime + 0.25);
 }
-function flipResult(){
-let r=Math.random()<.5?"HEADS 🪙":"TAILS 🪙";
-show("🪙 Result",'<div class="big">'+r+'</div>');
+
+function coin(){
+
+    coinSound("flip");
+
+    show(
+        "🪙 Coin Flip",
+        '<div class="big">🪙</div>' +
+        '<p>Heads या Tails चुनो</p>' +
+        '<button class="choice" onclick="coinResult(\'HEADS\')">🪙 HEADS</button>' +
+        '<button class="choice" onclick="coinResult(\'TAILS\')">🪙 TAILS</button>'
+    );
+}
+
+function coinResult(choice){
+
+    coinSound("flip");
+
+    let result = Math.random() < 0.5 ? "HEADS" : "TAILS";
+
+    setTimeout(function(){
+
+        if(choice === result){
+            coinSound("win");
+
+            show(
+                "🎉 You Win!",
+                '<div class="big">🪙</div>' +
+                '<p>Coin: <b>'+result+'</b></p>' +
+                '<p>🏆 सही अनुमान!</p>' +
+                '<button class="btn" onclick="coin()">🔄 Play Again</button>'
+            );
+
+        }else{
+            coinSound("lose");
+
+            show(
+                "😄 Try Again",
+                '<div class="big">🪙</div>' +
+                '<p>Coin: <b>'+result+'</b></p>' +
+                '<p>आपने चुना था: '+choice+'</p>' +
+                '<button class="btn" onclick="coin()">🔄 Play Again</button>'
+            );
+        }
+
+    },500);
 }
 
 /* TARGET */
