@@ -841,16 +841,162 @@ function numberHint(){
 
     
 /* QUIZ */
+
+/* GK QUIZ + SOUND */
+
+let quizSoundCtx;
+let quizIndex = 0;
+let quizScore = 0;
+
+const quizQuestions = [
+    {
+        q:"भारत की राजधानी क्या है?",
+        options:["Mumbai","Delhi","Kolkata","Chennai"],
+        answer:"Delhi"
+    },
+    {
+        q:"भारत का राष्ट्रीय पशु कौन है?",
+        options:["शेर","बाघ","हाथी","हिरण"],
+        answer:"बाघ"
+    },
+    {
+        q:"भारत का राष्ट्रीय फूल कौन सा है?",
+        options:["गुलाब","कमल","सूरजमुखी","चमेली"],
+        answer:"कमल"
+    },
+    {
+        q:"ताजमहल किस शहर में है?",
+        options:["आगरा","दिल्ली","जयपुर","लखनऊ"],
+        answer:"आगरा"
+    },
+    {
+        q:"भारत का राष्ट्रीय खेल आधिकारिक रूप से कौन सा है?",
+        options:["हॉकी","क्रिकेट","फुटबॉल","कोई आधिकारिक राष्ट्रीय खेल नहीं"],
+        answer:"कोई आधिकारिक राष्ट्रीय खेल नहीं"
+    }
+];
+
+function quizSound(type){
+
+    if(!quizSoundCtx){
+        quizSoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = quizSoundCtx.createOscillator();
+    let gain = quizSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(quizSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "correct" ? 1200 :
+        type === "wrong" ? 250 :
+        type === "win" ? 1500 : 600;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.12,
+        quizSoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        quizSoundCtx.currentTime + 0.25
+    );
+
+    osc.start();
+    osc.stop(quizSoundCtx.currentTime + 0.25);
+}
+
 function quiz(){
-show("🧠 GK Quiz",
-'<p>भारत की राजधानी क्या है?</p>'+
-'<button class="choice" onclick="quizResult(false)">Mumbai</button>'+
-'<button class="choice" onclick="quizResult(true)">Delhi</button>'+
-'<button class="choice" onclick="quizResult(false)">Kolkata</button>');
+
+    quizIndex = 0;
+    quizScore = 0;
+
+    showQuizQuestion();
 }
-function quizResult(ok){
-show("🧠 GK Quiz",ok?"🎉 Correct Answer!":"❌ Wrong Answer");
+
+function showQuizQuestion(){
+
+    let data = quizQuestions[quizIndex];
+
+    let html =
+        '<div class="score">🏆 Score: <span id="quizScore">'+quizScore+'</span></div>'+
+        '<p>Question '+(quizIndex+1)+' / '+quizQuestions.length+'</p>'+
+        '<h3 style="margin:15px 0;">'+data.q+'</h3>';
+
+    data.options.forEach(function(option){
+
+        html +=
+            '<button class="choice" '+
+            'onclick="quizAnswer(\''+
+            option.replace(/'/g,"\\'")+
+            '\')">'+
+            option+
+            '</button>';
+    });
+
+    show("🧠 GK Quiz",html);
 }
+
+function quizAnswer(answer){
+
+    let correct =
+        quizQuestions[quizIndex].answer;
+
+    if(answer === correct){
+
+        quizSound("correct");
+        quizScore += 10;
+
+        show(
+            "✅ Correct!",
+            '<div class="big">🎉</div>'+
+            '<p>सही जवाब!</p>'+
+            '<p>🏆 Score: <b>'+quizScore+'</b></p>'+
+            '<button class="btn" onclick="nextQuizQuestion()">➡️ Next</button>'
+        );
+
+    }else{
+
+        quizSound("wrong");
+
+        show(
+            "❌ Wrong Answer",
+            '<div class="big">😄</div>'+
+            '<p>सही जवाब था:</p>'+
+            '<p><b>'+correct+'</b></p>'+
+            '<p>🏆 Score: <b>'+quizScore+'</b></p>'+
+            '<button class="btn" onclick="nextQuizQuestion()">➡️ Next</button>'
+        );
+    }
+}
+
+function nextQuizQuestion(){
+
+    quizIndex++;
+
+    if(quizIndex >= quizQuestions.length){
+
+        quizSound("win");
+
+        show(
+            "🏆 Quiz Complete!",
+            '<div class="big">🧠🎉</div>'+
+            '<p>आपका Final Score</p>'+
+            '<h2>'+quizScore+' / '+(quizQuestions.length*10)+'</h2>'+
+            '<br>'+
+            '<button class="btn" onclick="quiz()">🔄 Play Again</button>'
+        );
+
+        return;
+    }
+
+    showQuizQuestion();
+}
+    
 
 /* FLAPPY DEMO */
 function flappy(){
