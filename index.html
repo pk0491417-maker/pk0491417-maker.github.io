@@ -1205,15 +1205,134 @@ function driveCar(){
     }
 }
 
-/* PENALTY */
-function penalty(){
-let a=["⚽ GOAL! 🎉","🧤 SAVED!","⚽ GOAL! 🔥","❌ MISSED!"];
-let r=a[Math.floor(Math.random()*a.length)];
-show("⚽ Penalty Kick",
-'<div class="big">⚽</div><p>'+r+'</p>'+
-'<button class="btn" onclick="penalty()">Kick Again</button>');
+/* PENALTY KICK + SOUND */
+
+let penaltySoundCtx;
+let penaltyScore = 0;
+let penaltyAttempts = 0;
+
+function penaltySound(type){
+
+    if(!penaltySoundCtx){
+        penaltySoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = penaltySoundCtx.createOscillator();
+    let gain = penaltySoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(penaltySoundCtx.destination);
+
+    osc.frequency.value =
+        type === "goal" ? 1200 :
+        type === "save" ? 350 :
+        type === "miss" ? 180 : 600;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.12,
+        penaltySoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        penaltySoundCtx.currentTime + 0.25
+    );
+
+    osc.start();
+    osc.stop(penaltySoundCtx.currentTime + 0.25);
 }
 
+function penalty(){
+
+    penaltyScore = 0;
+    penaltyAttempts = 0;
+
+    showPenaltyGame();
+}
+
+function showPenaltyGame(){
+
+    show(
+        "⚽ Penalty Kick",
+        '<div class="big">⚽</div>'+
+        '<p>Goal करने के लिए direction चुनो!</p>'+
+        '<p>🏆 Goals: <span id="penaltyScore">0</span></p>'+
+        '<p>🎯 Attempts: <span id="penaltyAttempts">0</span></p>'+
+        '<br>'+
+        '<button class="choice" onclick="kickPenalty(\'LEFT\')">⬅️ LEFT</button>'+
+        '<button class="choice" onclick="kickPenalty(\'CENTER\')">⬆️ CENTER</button>'+
+        '<button class="choice" onclick="kickPenalty(\'RIGHT\')">➡️ RIGHT</button>'
+    );
+}
+
+function kickPenalty(direction){
+
+    penaltyAttempts++;
+
+    let result = Math.random();
+
+    let resultText;
+
+    if(result < 0.55){
+
+        penaltyScore++;
+        penaltySound("goal");
+
+        resultText =
+            "⚽ GOAL! 🎉<br><br>"+
+            "आपने "+direction+" में शानदार shot मारा!";
+
+    }else if(result < 0.80){
+
+        penaltySound("save");
+
+        resultText =
+            "🧤 SAVED!<br><br>"+
+            "Goalkeeper ने shot रोक लिया!";
+
+    }else{
+
+        penaltySound("miss");
+
+        resultText =
+            "❌ MISSED!<br><br>"+
+            "Ball goal से बाहर चला गया!";
+    }
+
+    setTimeout(function(){
+
+        if(penaltyAttempts >= 5){
+
+            show(
+                "🏁 Penalty Complete",
+                '<div class="big">⚽🏆</div>'+
+                '<p>'+resultText+'</p>'+
+                '<hr style="margin:15px 0;border-color:#292f4b;">'+
+                '<p>🎯 Attempts: <b>'+penaltyAttempts+'</b></p>'+
+                '<p>🏆 Goals: <b>'+penaltyScore+'</b></p>'+
+                '<br>'+
+                '<button class="btn" onclick="penalty()">🔄 Play Again</button>'
+            );
+
+        }else{
+
+            show(
+                "⚽ Penalty Result",
+                '<div class="big">⚽</div>'+
+                '<p>'+resultText+'</p>'+
+                '<p>🏆 Goals: <b>'+penaltyScore+'</b></p>'+
+                '<p>🎯 Attempts: <b>'+penaltyAttempts+'/5</b></p>'+
+                '<br>'+
+                '<button class="btn" onclick="showPenaltyGame()">➡️ Next Kick</button>'
+            );
+        }
+
+    },400);
+}
+    
 </script>
 
 </body>
