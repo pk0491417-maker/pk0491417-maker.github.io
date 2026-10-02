@@ -997,21 +997,110 @@ function nextQuizQuestion(){
     showQuizQuestion();
 }
     
+/* FLAPPY BIRD + SOUND */
 
-/* FLAPPY DEMO */
+let flappySoundCtx;
+let flappyScore = 0;
+let flappyGameOver = false;
+
+function flappySound(type){
+
+    if(!flappySoundCtx){
+        flappySoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = flappySoundCtx.createOscillator();
+    let gain = flappySoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(flappySoundCtx.destination);
+
+    osc.frequency.value =
+        type === "fly" ? 700 :
+        type === "score" ? 1100 :
+        type === "win" ? 1400 : 220;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.12,
+        flappySoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        flappySoundCtx.currentTime + 0.18
+    );
+
+    osc.start();
+    osc.stop(flappySoundCtx.currentTime + 0.18);
+}
+
 function flappy(){
-let score=0;
-show("🐦 Flappy Demo",
-'<div class="big">🐦</div><p id="fscore">Score: 0</p>'+
-'<button class="btn" onclick="flap()">TAP / FLY</button>');
-window.flapScore=0;
+
+    flappyScore = 0;
+    flappyGameOver = false;
+
+    show(
+        "🐦 Flappy Demo",
+        '<div class="big">🐦</div>'+
+        '<p>Tap करके bird को उड़ाओ!</p>'+
+        '<p>🏆 Score: <span id="fscore">0</span></p>'+
+        '<button class="btn" onclick="flap()">🐦 FLY</button>'
+    );
 }
+
 function flap(){
-window.flapScore++;
-let s=window.flapScore;
-document.getElementById("fscore").innerText="Score: "+s;
-if(s>=10)show("🐦 Flappy Demo","🏆 Great! Score: "+s);
+
+    if(flappyGameOver) return;
+
+    flappyScore++;
+
+    flappySound("fly");
+
+    let scoreElement =
+        document.getElementById("fscore");
+
+    if(scoreElement){
+        scoreElement.innerText = flappyScore;
+    }
+
+    if(flappyScore >= 10){
+
+        flappyGameOver = true;
+
+        flappySound("win");
+
+        show(
+            "🏆 You Win!",
+            '<div class="big">🐦🎉</div>'+
+            '<p>बहुत बढ़िया! आपने 10 points पूरे कर लिए।</p>'+
+            '<p>🏆 Score: <b>'+flappyScore+'</b></p>'+
+            '<br>'+
+            '<button class="btn" onclick="flappy()">🔄 Play Again</button>'
+        );
+
+        return;
+    }
+
+    if(Math.random() < 0.20){
+
+        flappyGameOver = true;
+
+        flappySound("lose");
+
+        show(
+            "💥 Game Over",
+            '<div class="big">🐦💥</div>'+
+            '<p>Bird obstacle से टकरा गया!</p>'+
+            '<p>🏆 Score: <b>'+flappyScore+'</b></p>'+
+            '<br>'+
+            '<button class="btn" onclick="flappy()">🔄 Restart</button>'
+        );
+    }
 }
+
 
 /* RACING */
 function racing(){
