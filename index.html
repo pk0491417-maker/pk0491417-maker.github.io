@@ -302,15 +302,117 @@ function coinResult(choice){
 }
 
 /* TARGET */
-function target(){
-show("🎯 Lucky Target",
-'<div class="big">🎯</div><button class="choice" onclick="targetResult()">Shoot!</button>');
-}
-function targetResult(){
-let s=Math.floor(Math.random()*101);
-show("🎯 Score","Your target score: <b>"+s+"</b>");
+
+/* LUCKY TARGET + SOUND */
+
+let targetSoundCtx;
+let targetScore = 0;
+let targetTime = 10;
+let targetTimer;
+
+function targetSound(type){
+
+    if(!targetSoundCtx){
+        targetSoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = targetSoundCtx.createOscillator();
+    let gain = targetSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(targetSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "hit" ? 900 :
+        type === "win" ? 1200 : 250;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.12,
+        targetSoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        targetSoundCtx.currentTime + 0.2
+    );
+
+    osc.start();
+    osc.stop(targetSoundCtx.currentTime + 0.2);
 }
 
+function target(){
+
+    targetScore = 0;
+    targetTime = 10;
+
+    clearInterval(targetTimer);
+
+    show(
+        "🎯 Lucky Target",
+        '<div class="score">🏆 Score: <span id="targetScore">0</span></div>'+
+        '<div class="score">⏱️ Time: <span id="targetTime">10</span></div>'+
+        '<div class="big">🎯</div>'+
+        '<button class="btn" onclick="startTarget()">▶️ Start Game</button>'
+    );
+}
+
+function startTarget(){
+
+    targetScore = 0;
+    targetTime = 10;
+
+    show(
+        "🎯 Lucky Target",
+        '<div class="score">🏆 Score: <span id="targetScore">0</span></div>'+
+        '<div class="score">⏱️ Time: <span id="targetTime">10</span></div>'+
+        '<button class="btn" id="targetButton" onclick="targetHit()">🎯 HIT TARGET</button>'
+    );
+
+    targetTimer = setInterval(function(){
+
+        targetTime--;
+
+        let timeElement = document.getElementById("targetTime");
+
+        if(timeElement){
+            timeElement.innerText = targetTime;
+        }
+
+        if(targetTime <= 0){
+
+            clearInterval(targetTimer);
+            targetSound("win");
+
+            show(
+                "🏆 Time Up!",
+                '<div class="big">🎯</div>'+
+                '<p>Your Score: <b>'+targetScore+'</b></p>'+
+                '<br>'+
+                '<button class="btn" onclick="target()">🔄 Play Again</button>'
+            );
+        }
+
+    },1000);
+}
+
+function targetHit(){
+
+    if(targetTime <= 0) return;
+
+    targetScore += 10;
+
+    targetSound("hit");
+
+    let scoreElement = document.getElementById("targetScore");
+
+    if(scoreElement){
+        scoreElement.innerText = targetScore;
+    }
+}
+    
 /* WHEEL */
 function wheel(){
 let a=["⭐ Star","🎁 Gift","🏆 Trophy","💎 Diamond","🔥 Fire"];
