@@ -1102,11 +1102,107 @@ function flap(){
 }
 
 
-/* RACING */
+/* CAR RACING + SOUND */
+
+let racingSoundCtx;
+let racingScore = 0;
+let racingOver = false;
+
+function racingSound(type){
+
+    if(!racingSoundCtx){
+        racingSoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = racingSoundCtx.createOscillator();
+    let gain = racingSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(racingSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "drive" ? 500 :
+        type === "win" ? 1300 : 180;
+
+    osc.type = "sawtooth";
+
+    gain.gain.setValueAtTime(
+        0.08,
+        racingSoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        racingSoundCtx.currentTime + 0.18
+    );
+
+    osc.start();
+    osc.stop(racingSoundCtx.currentTime + 0.18);
+}
+
 function racing(){
-let score=Math.floor(Math.random()*100)+1;
-show("🚗 Car Racing",
-'<div class="big">🚗</div><p>Race completed!</p><p>🏁 Score: <b>'+score+'</b></p>');
+
+    racingScore = 0;
+    racingOver = false;
+
+    show(
+        "🚗 Car Racing",
+        '<div class="big">🚗</div>'+
+        '<p>🏁 Race शुरू करो!</p>'+
+        '<p>🏆 Score: <span id="raceScore">0</span></p>'+
+        '<button class="btn" onclick="driveCar()">🚗 DRIVE</button>'
+    );
+}
+
+function driveCar(){
+
+    if(racingOver) return;
+
+    racingSound("drive");
+
+    racingScore += 10;
+
+    let scoreElement =
+        document.getElementById("raceScore");
+
+    if(scoreElement){
+        scoreElement.innerText = racingScore;
+    }
+
+    if(racingScore >= 100){
+
+        racingOver = true;
+
+        racingSound("win");
+
+        show(
+            "🏆 Race Won!",
+            '<div class="big">🏎️🏆</div>'+
+            '<p>आपने race जीत ली!</p>'+
+            '<p>🏆 Final Score: <b>'+racingScore+'</b></p>'+
+            '<br>'+
+            '<button class="btn" onclick="racing()">🔄 Race Again</button>'
+        );
+
+        return;
+    }
+
+    if(Math.random() < 0.18){
+
+        racingOver = true;
+
+        racingSound("crash");
+
+        show(
+            "💥 Crash!",
+            '<div class="big">🚗💥</div>'+
+            '<p>आपकी car obstacle से टकरा गई!</p>'+
+            '<p>🏆 Score: <b>'+racingScore+'</b></p>'+
+            '<br>'+
+            '<button class="btn" onclick="racing()">🔄 Restart</button>'
+        );
+    }
 }
 
 /* PENALTY */
