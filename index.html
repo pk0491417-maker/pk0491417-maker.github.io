@@ -412,27 +412,105 @@ function targetHit(){
         scoreElement.innerText = targetScore;
     }
 }
-    
-/* WHEEL */
+
+   /* SPIN WHEEL + SOUND */
+
+let wheelSoundCtx;
+let wheelSpinning = false;
+
+function wheelSound(type){
+
+    if(!wheelSoundCtx){
+        wheelSoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = wheelSoundCtx.createOscillator();
+    let gain = wheelSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(wheelSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "spin" ? 600 :
+        type === "win" ? 1100 : 300;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.1,
+        wheelSoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        wheelSoundCtx.currentTime + 0.18
+    );
+
+    osc.start();
+    osc.stop(wheelSoundCtx.currentTime + 0.18);
+}
+
 function wheel(){
-let a=["⭐ Star","🎁 Gift","🏆 Trophy","💎 Diamond","🔥 Fire"];
-let r=a[Math.floor(Math.random()*a.length)];
-show("🎡 Spin Wheel",'<div class="big">🎡</div><p>Result: <b>'+r+'</b></p>');
+
+    wheelSpinning = false;
+
+    show(
+        "🎡 Spin Wheel",
+        '<div id="wheelCircle" style="font-size:90px;margin:20px;">🎡</div>'+
+        '<p>Spin the wheel and try your luck!</p>'+
+        '<br>'+
+        '<button class="btn" onclick="spinWheelNow()">🎡 SPIN</button>'
+    );
 }
 
-/* CARDS */
-function cards(){
-let a=["⭐","💎","🏆","🍀"];
-let win=a[Math.floor(Math.random()*a.length)];
-show("🃏 Card Match",
-'<p>Choose a card:</p>'+
-a.map(x=>`<button class="choice" onclick="cardResult('${x}','${win}')">${x}</button>`).join(""));
-}
-function cardResult(x,w){
-show("🃏 Result",x===w?"🎉 Match!":"Try again! Correct card was "+w);
-}
+function spinWheelNow(){
 
-/* NUMBER */
+    if(wheelSpinning) return;
+
+    wheelSpinning = true;
+
+    wheelSound("spin");
+
+    let circle = document.getElementById("wheelCircle");
+
+    if(circle){
+        circle.style.transition="transform 3s ease-out";
+        circle.style.transform=
+            "rotate("+(Math.floor(Math.random()*360)+1440)+"deg)";
+    }
+
+    setTimeout(function(){
+
+        let prizes=[
+            "⭐ STAR",
+            "🎁 GIFT",
+            "🏆 TROPHY",
+            "💎 DIAMOND",
+            "🔥 FIRE",
+            "🍀 LUCKY"
+        ];
+
+        let result=
+            prizes[Math.floor(Math.random()*prizes.length)];
+
+        wheelSound("win");
+
+        wheelSpinning=false;
+
+        show(
+            "🎉 Wheel Result",
+            '<div class="big">🎡</div>'+
+            '<p>You got:</p>'+
+            '<h2>'+result+'</h2>'+
+            '<br>'+
+            '<button class="btn" onclick="wheel()">🔄 Spin Again</button>'
+        );
+
+    },3200);
+} 
+
+    /* NUMBER */
 function numberGame(){
 let n=Math.floor(Math.random()*10)+1;
 show("🧩 Number Puzzle",
