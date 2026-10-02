@@ -702,21 +702,144 @@ function flipCard(index,symbol){
 
     },700);
 }
-    
+/* NUMBER PUZZLE + SOUND */
 
-    /* NUMBER */
+let numberSoundCtx;
+let numberTarget = 0;
+let numberAttempts = 0;
+
+function numberSound(type){
+
+    if(!numberSoundCtx){
+        numberSoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = numberSoundCtx.createOscillator();
+    let gain = numberSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(numberSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "correct" ? 1200 :
+        type === "click" ? 600 : 250;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.12,
+        numberSoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        numberSoundCtx.currentTime + 0.2
+    );
+
+    osc.start();
+    osc.stop(numberSoundCtx.currentTime + 0.2);
+}
+
 function numberGame(){
-let n=Math.floor(Math.random()*10)+1;
-show("🧩 Number Puzzle",
-'<p>Guess a number from 1 to 10</p>'+
-'<input id="guess" type="number" min="1" max="10" placeholder="Enter number">'+
-'<button class="btn" onclick="checkNumber('+n+')">Check</button>');
-}
-function checkNumber(n){
-let g=document.getElementById("guess").value;
-show("🧩 Result",Number(g)===n?"🎉 Correct!":"❌ Wrong. Number was "+n);
+
+    numberTarget = Math.floor(Math.random()*20)+1;
+    numberAttempts = 0;
+
+    show(
+        "🧩 Number Puzzle",
+        '<div class="big">🔢</div>'+
+        '<p>1 से 20 के बीच छुपा नंबर खोजो!</p>'+
+        '<p>🎯 Attempts: <span id="numberAttempts">0</span></p>'+
+        '<input id="guess" type="number" min="1" max="20" placeholder="1 - 20">'+
+        '<button class="btn" onclick="checkNumber()">🔍 Check</button>'+
+        '<br><br>'+
+        '<button class="choice" onclick="numberHint()">💡 Hint</button>'
+    );
 }
 
+function checkNumber(){
+
+    numberSound("click");
+
+    let input = document.getElementById("guess");
+
+    if(!input) return;
+
+    let guess = Number(input.value);
+
+    if(guess < 1 || guess > 20){
+
+        show(
+            "⚠️ Invalid Number",
+            "<p>कृपया 1 से 20 के बीच नंबर डालें।</p>"+
+            '<button class="btn" onclick="numberGame()">🔄 Try Again</button>'
+        );
+
+        return;
+    }
+
+    numberAttempts++;
+
+    let attemptElement =
+        document.getElementById("numberAttempts");
+
+    if(attemptElement){
+        attemptElement.innerText = numberAttempts;
+    }
+
+    if(guess === numberTarget){
+
+        numberSound("correct");
+
+        let score =
+            Math.max(100 - ((numberAttempts-1)*10),20);
+
+        show(
+            "🎉 Correct!",
+            '<div class="big">🏆</div>'+
+            '<p>सही नंबर था: <b>'+numberTarget+'</b></p>'+
+            '<p>🎯 Attempts: <b>'+numberAttempts+'</b></p>'+
+            '<p>🏆 Score: <b>'+score+'</b></p>'+
+            '<br>'+
+            '<button class="btn" onclick="numberGame()">🔄 Play Again</button>'
+        );
+
+    }else{
+
+        numberSound("click");
+
+        let message =
+            guess < numberTarget
+            ? "⬆️ थोड़ा बड़ा नंबर try करो!"
+            : "⬇️ थोड़ा छोटा नंबर try करो!";
+
+        show(
+            "🧩 Try Again",
+            '<p>'+message+'</p>'+
+            '<p>🎯 Attempts: <b>'+numberAttempts+'</b></p>'+
+            '<button class="btn" onclick="numberGame()">🔄 New Number</button>'
+        );
+    }
+}
+
+function numberHint(){
+
+    numberSound("click");
+
+    let hint =
+        numberTarget % 2 === 0
+        ? "💡 Hint: नंबर EVEN है।"
+        : "💡 Hint: नंबर ODD है।";
+
+    show(
+        "💡 Hint",
+        '<p>'+hint+'</p>'+
+        '<button class="btn" onclick="numberGame()">🔄 Continue</button>'
+    );
+}    
+
+    
 /* QUIZ */
 function quiz(){
 show("🧠 GK Quiz",
