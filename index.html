@@ -509,6 +509,200 @@ function spinWheelNow(){
 
     },3200);
 } 
+/* CARD MATCH + SOUND */
+
+let cardSoundCtx;
+let cardFirst = null;
+let cardSecond = null;
+let cardLocked = false;
+let cardScore = 0;
+let cardAttempts = 0;
+
+function cardSound(type){
+
+    if(!cardSoundCtx){
+        cardSoundCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    let osc = cardSoundCtx.createOscillator();
+    let gain = cardSoundCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(cardSoundCtx.destination);
+
+    osc.frequency.value =
+        type === "flip" ? 600 :
+        type === "match" ? 1100 :
+        type === "win" ? 1400 : 250;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.12,
+        cardSoundCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        cardSoundCtx.currentTime + 0.2
+    );
+
+    osc.start();
+    osc.stop(cardSoundCtx.currentTime + 0.2);
+}
+
+function cards(){
+
+    cardFirst = null;
+    cardSecond = null;
+    cardLocked = false;
+    cardScore = 0;
+    cardAttempts = 0;
+
+    let symbols = ["⭐","💎","🏆","🍀"];
+    let deck = [...symbols,...symbols];
+
+    deck.sort(() => Math.random() - 0.5);
+
+    let html =
+        '<div class="score">🏆 Score: <span id="cardScore">0</span></div>'+
+        '<div class="score">🎯 Attempts: <span id="cardAttempts">0</span></div>'+
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:20px auto;max-width:330px;">';
+
+    deck.forEach(function(symbol,index){
+
+        html +=
+            '<button id="card'+index+'" '+
+            'onclick="flipCard('+index+',\''+symbol+'\')" '+
+            'style="height:70px;font-size:28px;background:#252b45;color:white;border:0;border-radius:10px;cursor:pointer;">'+
+            '❓</button>';
+    });
+
+    html += '</div>';
+
+    html +=
+        '<button class="btn" onclick="cards()">🔄 New Game</button>';
+
+    show("🃏 Card Match",html);
+
+    window.cardDeck = deck;
+    window.cardMatched = [];
+}
+
+function flipCard(index,symbol){
+
+    if(cardLocked) return;
+
+    if(window.cardMatched.includes(index)) return;
+
+    if(cardFirst && cardFirst.index === index) return;
+
+    cardSound("flip");
+
+    let button = document.getElementById("card"+index);
+
+    if(!button) return;
+
+    button.innerText = symbol;
+    button.style.background = "#176b55";
+
+    if(!cardFirst){
+
+        cardFirst = {
+            index:index,
+            symbol:symbol
+        };
+
+        return;
+    }
+
+    cardSecond = {
+        index:index,
+        symbol:symbol
+    };
+
+    cardAttempts++;
+
+    let attemptElement =
+        document.getElementById("cardAttempts");
+
+    if(attemptElement){
+        attemptElement.innerText = cardAttempts;
+    }
+
+    cardLocked = true;
+
+    setTimeout(function(){
+
+        if(cardFirst.symbol === cardSecond.symbol){
+
+            cardSound("match");
+
+            window.cardMatched.push(cardFirst.index);
+            window.cardMatched.push(cardSecond.index);
+
+            cardScore += 25;
+
+            let scoreElement =
+                document.getElementById("cardScore");
+
+            if(scoreElement){
+                scoreElement.innerText = cardScore;
+            }
+
+            cardLocked = false;
+
+            cardFirst = null;
+            cardSecond = null;
+
+            if(window.cardMatched.length === window.cardDeck.length){
+
+                setTimeout(function(){
+
+                    cardSound("win");
+
+                    show(
+                        "🏆 You Win!",
+                        '<div class="big">🃏🎉</div>'+
+                        '<p>बहुत बढ़िया! आपने सभी cards match कर लिए।</p>'+
+                        '<p>🏆 Score: <b>'+cardScore+'</b></p>'+
+                        '<p>🎯 Attempts: <b>'+cardAttempts+'</b></p>'+
+                        '<br>'+
+                        '<button class="btn" onclick="cards()">🔄 Play Again</button>'
+                    );
+
+                },300);
+            }
+
+        }else{
+
+            cardSound("wrong");
+
+            let firstButton =
+                document.getElementById("card"+cardFirst.index);
+
+            let secondButton =
+                document.getElementById("card"+cardSecond.index);
+
+            if(firstButton){
+                firstButton.innerText = "❓";
+                firstButton.style.background = "#252b45";
+            }
+
+            if(secondButton){
+                secondButton.innerText = "❓";
+                secondButton.style.background = "#252b45";
+            }
+
+            cardFirst = null;
+            cardSecond = null;
+            cardLocked = false;
+        }
+
+    },700);
+}
+    
 
     /* NUMBER */
 function numberGame(){
